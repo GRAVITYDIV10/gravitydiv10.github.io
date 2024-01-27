@@ -1,0 +1,109 @@
+* 使用GNU EMACS开发单片机项目
+
+** 编写Makefile
+
+不支持使用通用构建系统编译的单片机SDK需要手动编写一个Makefile:
+
+#+BEGIN_SRC makefile
+  # 填写官方SDK存放位置
+  XXX_SDK ?= /path/to/sdk
+
+  # 一般填写官方SDK提供的Link脚本，如果没有则需要自己编写
+  LINK_SCRIPT ?= /path/to/link.ld
+
+  # 启动文件
+  SRCS += $(XXX_SDK)/SRC/start.s
+
+  # 需要编译的驱动源码文件
+  SRCS += $(XXX_SDK)/SRC/xxx_timer.c
+  SRCS += $(XXX_SDK)/SRC/xxx_uart.c
+
+  # 搜索头文件的路径
+  INCS += -I $(XXX_SDK)/INC/
+
+  # 用户编写的代码文件
+  SRCS += ./main.c
+
+  # 编译参数
+  CFLAGS += -Wall -Wextra -Os
+
+  # 工具链
+  CROSS_COMPILE ?= arch-vendor-elf-
+  CC = $(CROSS_COMPILE)gcc
+  OD = $(CROSS_COMPILE)objdump
+  OC = $(CROSS_COMPILE)objcopy
+
+  # 输出文件名
+  FW_NAME ?= fw
+
+  all: $(FW_NAME).elf $(FW_NAME).bin
+
+  clean:
+	  rm -fv *.elf *.bin
+
+  # 中间产物ELF
+  $(FW_NAME).elf:
+	$(CC) $(CFLAGS) $(INCS) $(SRCS) -o $(FW_NAME).elf
+
+  # 用来烧录到单片机的固件文件
+  $(FW_NAME).bin:
+	$(OC) -O binary $(FW_NAME).elf $(FW_NAME).bin
+#+END_SRC
+
+** 生成compile_commands.json
+
+使用 compiledb 生成compile_commands.json
+
+#+BEGIN_SRC shell
+  make clean
+  compiledb -- make all
+#+END_SRC
+
+** 配置clangd
+
+由于clangd运行时会默认使用主机架构的编译器来处理源码文件
+
+所以需要屏蔽一些架构相关的选项
+
+在项目新建一个 .clangd 文件:
+
+#+BEGIN_SRC
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+  Remove: [-m*, -f*]
+#+END_SRC
+
+** 配置GNU EMACS
+
+安装eglot（新版Emacs不需要手动安装，因为已经内置了）:
+
+#+BEGIN_SRC
+  package-install RET eglot RET
+#+END_SRC
+
+安装company
+
+#+BEGIN_SRC
+  package-install RET company RET
+#+END_SRC
+
+在emacs初始化文件中加入:
+
+#+BEGIN_SRC elisp
+(add-hook 'c-mode-hook 'eglot-ensure) ;; 打开 C 文件时候自动开启eglot和clangd
+(add-hook 'c-mode-hook 'company-mode) ;; 打开 C 文件时候自动开启company，配合eglot进行补全
+#+END_SRC
+
+** 结束
+
+到这里需要的配置已经完成了，使用Emacs打开你的的单片机项目.
+
+敲出已有函数的前3个字符，就会弹出补全窗口了。
+
+[[file:org/emacs-and-mcu-project.png]]
+
+** 参考
+
+我使用GNU EMACS作为编写工具的单片机项目:
+
+https://github.com/GRAVITYDIV10/ch58x-ec

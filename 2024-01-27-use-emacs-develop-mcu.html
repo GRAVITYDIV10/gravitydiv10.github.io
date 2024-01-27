@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-01-27 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="luhui" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org40dcaa9" class="outline-2">
+<h2 id="org40dcaa9">使用GNU EMACS开发单片机项目</h2>
+<div class="outline-text-2" id="text-org40dcaa9">
+</div>
+<div id="outline-container-org7093a0c" class="outline-3">
+<h3 id="org7093a0c">编写Makefile</h3>
+<div class="outline-text-3" id="text-org7093a0c">
+<p>
+不支持使用通用构建系统编译的单片机SDK需要手动编写一个Makefile:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-makefile"><code># 填写官方SDK存放位置</code>
+<code>XXX_SDK ?= /path/to/sdk</code>
+<code></code>
+<code># 一般填写官方SDK提供的Link脚本，如果没有则需要自己编写</code>
+<code>LINK_SCRIPT ?= /path/to/link.ld</code>
+<code></code>
+<code># 启动文件</code>
+<code>SRCS += $(XXX_SDK)/SRC/start.s</code>
+<code></code>
+<code># 需要编译的驱动源码文件</code>
+<code>SRCS += $(XXX_SDK)/SRC/xxx_timer.c</code>
+<code>SRCS += $(XXX_SDK)/SRC/xxx_uart.c</code>
+<code></code>
+<code># 搜索头文件的路径</code>
+<code>INCS += -I $(XXX_SDK)/INC/</code>
+<code></code>
+<code># 用户编写的代码文件</code>
+<code>SRCS += ./main.c</code>
+<code></code>
+<code># 编译参数</code>
+<code>CFLAGS += -Wall -Wextra -Os</code>
+<code></code>
+<code># 工具链</code>
+<code>CROSS_COMPILE ?= arch-vendor-elf-</code>
+<code>CC = $(CROSS_COMPILE)gcc</code>
+<code>OD = $(CROSS_COMPILE)objdump</code>
+<code>OC = $(CROSS_COMPILE)objcopy</code>
+<code></code>
+<code># 输出文件名</code>
+<code>FW_NAME ?= fw</code>
+<code></code>
+<code>all: $(FW_NAME).elf $(FW_NAME).bin</code>
+<code></code>
+<code>clean:</code>
+<code>        rm -fv *.elf *.bin</code>
+<code></code>
+<code># 中间产物ELF</code>
+<code>$(FW_NAME).elf:</code>
+<code>      $(CC) $(CFLAGS) $(INCS) $(SRCS) -o $(FW_NAME).elf</code>
+<code></code>
+<code># 用来烧录到单片机的固件文件</code>
+<code>$(FW_NAME).bin:</code>
+<code>      $(OC) -O binary $(FW_NAME).elf $(FW_NAME).bin</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc2d900d" class="outline-3">
+<h3 id="orgc2d900d">生成compile_commands.json</h3>
+<div class="outline-text-3" id="text-orgc2d900d">
+<p>
+使用 compiledb 生成compile_commands.json
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>make clean</code>
+<code>compiledb -- make all</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org46bf480" class="outline-3">
+<h3 id="org46bf480">配置clangd</h3>
+<div class="outline-text-3" id="text-org46bf480">
+<p>
+由于clangd运行时会默认使用主机架构的编译器来处理源码文件
+</p>
+
+<p>
+所以需要屏蔽一些架构相关的选项
+</p>
+
+<p>
+在项目新建一个 .clangd 文件:
+</p>
+
+<pre class="example">
+<code>CompileFlags:</code>
+<code>  Add: -Wno-unknown-warning-option</code>
+<code>  Remove: [-m*, -f*]</code>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgf27e27f" class="outline-3">
+<h3 id="orgf27e27f">配置GNU EMACS</h3>
+<div class="outline-text-3" id="text-orgf27e27f">
+<p>
+安装eglot（新版Emacs不需要手动安装，因为已经内置了）:
+</p>
+
+<pre class="example">
+<code>package-install RET eglot RET</code>
+</pre>
+
+<p>
+安装company
+</p>
+
+<pre class="example">
+<code>package-install RET company RET</code>
+</pre>
+
+<p>
+在emacs初始化文件中加入:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp"><code>(add-hook 'c-mode-hook 'eglot-ensure) ;; 打开 C 文件时候自动开启eglot和clangd</code>
+<code>(add-hook 'c-mode-hook 'company-mode) ;; 打开 C 文件时候自动开启company，配合eglot进行补全</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga58635d" class="outline-3">
+<h3 id="orga58635d">结束</h3>
+<div class="outline-text-3" id="text-orga58635d">
+<p>
+到这里需要的配置已经完成了，使用Emacs打开你的的单片机项目.
+</p>
+
+<p>
+敲出已有函数的前3个字符，就会弹出补全窗口了。
+</p>
+
+
+<div id="org2ccab50" class="figure">
+<p><img src="org/emacs-and-mcu-project.png" alt="emacs-and-mcu-project.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org64b07e0" class="outline-3">
+<h3 id="org64b07e0">参考</h3>
+<div class="outline-text-3" id="text-org64b07e0">
+<p>
+我使用GNU EMACS作为编写工具的单片机项目:
+</p>
+
+<p>
+<a href="https://github.com/GRAVITYDIV10/ch58x-ec">https://github.com/GRAVITYDIV10/ch58x-ec</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-01-27</p>
+</div>
+</body>
+</html>
