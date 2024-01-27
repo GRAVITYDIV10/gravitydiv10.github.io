@@ -9,15 +9,8 @@
 使用GNU EMACS进行用户空间C程序开发
 
 TODO
-使用GNU EMACS进行Linux内核开发
 
-TODO
-
-使用GNU EMACS进行Linux内核树外模块开发
-
-TODO
-
-使用GNU EMACS进行uboot开发
+使用GNU EMACS进行linux内核/uboot开发
 
 TODO
 
