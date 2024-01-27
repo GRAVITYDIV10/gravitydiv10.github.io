@@ -100,7 +100,7 @@ CompileFlags:
 
 敲出已有函数的前3个字符，就会弹出补全窗口了。
 
-[[file:org/emacs-and-mcu-project.png]]
+[[file:emacs-and-mcu-project.png]]
 
 ** 参考
 

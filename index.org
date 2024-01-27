@@ -2,6 +2,6 @@
 
 使用GNU EMACS进行单片机开发
 
-[[file:2024-01-27-use-emacs-develop-mcu.org]]
+[[file:use-gnu-emacs-develop-mcu.org]]
 
 
