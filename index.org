@@ -1,7 +1,23 @@
 * 博客
 
+** GNU EMACS 与嵌入式开发
+
 使用GNU EMACS进行单片机开发
 
 [[file:use-gnu-emacs-develop-mcu.org]]
 
+使用GNU EMACS进行用户空间C程序开发
+
+TODO
+使用GNU EMACS进行Linux内核开发
+
+TODO
+
+使用GNU EMACS进行Linux内核树外模块开发
+
+TODO
+
+使用GNU EMACS进行uboot开发
+
+TODO
 
