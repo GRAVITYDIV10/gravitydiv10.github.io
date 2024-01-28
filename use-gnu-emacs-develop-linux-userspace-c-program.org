@@ -82,11 +82,21 @@ https://aur.archlinux.org/packages/gdb-multiarch
 gdbserver 0.0.0.0:1234 /tmp/hello  
 #+END_SRC
 
+注意:不同发行版的gdb-multiarch命名可能会不一样:
+
+ArchLinux:
+
+https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gdb-multiarch#n50
+
+Fedora:
+
+dnf install gdb安装的gdb默认开启了multiarch
+
 在GNU EMACS中运行:
 
 #+BEGIN_SRC
-M-x gud-gdb RET RET
-进入gdb后输入(ip为板子的ip地址):
+gud-gdb RET 删除原有gdb命令，然后输入gdb-multiarch，回车
+set architecture arch
 target remote ip:1234
 #+END_SRC
 
