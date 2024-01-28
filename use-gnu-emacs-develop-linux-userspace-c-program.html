@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-01-28 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="luhui" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org63c44e7" class="outline-2">
+<h2 id="org63c44e7">使用GNU EMACS开发Linux用户空间C程序</h2>
+<div class="outline-text-2" id="text-org63c44e7">
+</div>
+<div id="outline-container-org98adfb7" class="outline-3">
+<h3 id="org98adfb7">配置GNU EMACS</h3>
+<div class="outline-text-3" id="text-org98adfb7">
+<pre class="example">
+<code>package-install RET eglot RET</code>
+<code>package-isntall RET company RET</code>
+</pre>
+
+<p>
+在GNU EMACS初始化脚本中加入
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp"><code>(add-hook 'c-mode-hook 'eglot-ensure) ;; 在C模式自动开启eglot</code>
+<code>(add-hook 'c-mode-hook 'company-mode) ;; 在C模式自动开启company</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgcc83157" class="outline-3">
+<h3 id="orgcc83157">编写Makefile</h3>
+<div class="outline-text-3" id="text-orgcc83157">
+<div class="org-src-container">
+<pre class="src src-makefile"><code>CROSS_COMPILE ?= arch-vendor-</code>
+<code>CC = $(CROSS_COMPILE)gcc</code>
+<code>CFLAGS += -Wall -Wextra -O3 -g3</code>
+<code>CFLAGS += -march=xxx -mabi=xxx</code>
+<code></code>
+<code>all:</code>
+<code>      $(CC) $(CFLAGS) hello.c -o hello</code>
+<code></code>
+<code>clean:</code>
+<code>      rm -fv *.out hello</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org413c3ca" class="outline-3">
+<h3 id="org413c3ca">编写.clangd</h3>
+<div class="outline-text-3" id="text-org413c3ca">
+<p>
+由于clangd使用主机的c编译器来处理传入的C源码文件，所以需要clangd忽略机器相关的编译器参数:
+</p>
+
+<pre class="example">
+<code>CompileFlags:</code>
+<code>  Add: -Wno-unknown-warning-option</code>
+<code>  Remove: [-m*, -f*]</code>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgc5ef8a4" class="outline-3">
+<h3 id="orgc5ef8a4">生成 compile_commands.json</h3>
+<div class="outline-text-3" id="text-orgc5ef8a4">
+<pre class="example">
+<code>make clean</code>
+<code>bear -- make all</code>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org9c8ff29" class="outline-3">
+<h3 id="org9c8ff29">编写程序</h3>
+<div class="outline-text-3" id="text-org9c8ff29">
+<pre class="example">
+<code>emacs hello.c</code>
+</pre>
+
+<p>
+输入代码前面的字符就可以看到补全
+</p>
+
+
+<div id="org79b33b8" class="figure">
+<p><img src="emacs-and-linux-c-program.png" alt="emacs-and-linux-c-program.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd3cb7f0" class="outline-3">
+<h3 id="orgd3cb7f0">上传到板子</h3>
+<div class="outline-text-3" id="text-orgd3cb7f0">
+<div class="org-src-container">
+<pre class="src src-shell"><code>scp hello xxx@board:/tmp/hello</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org57be86a" class="outline-3">
+<h3 id="org57be86a">调试</h3>
+<div class="outline-text-3" id="text-org57be86a">
+</div>
+<div id="outline-container-orgc44a5f7" class="outline-4">
+<h4 id="orgc44a5f7">使用printf调试</h4>
+<div class="outline-text-4" id="text-orgc44a5f7">
+<p>
+在程序里面打日志作为调试手段
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge71910e" class="outline-4">
+<h4 id="orge71910e">远程调试</h4>
+<div class="outline-text-4" id="text-orge71910e">
+<p>
+远程板子因为资源限制通常不会提供完整的gdb用来调试，通常会安装一个gdbserver充当agent，供别的机器远程上去调试。
+</p>
+
+<p>
+因为嵌入式开发的目标板子和运行GNU EMACS的PC机架构不一样，所以在运行GNU EMACS的机器上需要安装一个支持多个架构的gdb-multiarch:
+</p>
+
+<p>
+<a href="https://aur.archlinux.org/packages/gdb-multiarch">https://aur.archlinux.org/packages/gdb-multiarch</a>
+</p>
+
+<p>
+在板子上运行:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>gdbserver 0.0.0.0:1234 /tmp/hello  </code>
+</pre>
+</div>
+
+<p>
+在GNU EMACS中运行:
+</p>
+
+<pre class="example">
+<code>M-x gud-gdb RET RET</code>
+<code>进入gdb后输入(ip为板子的ip地址):</code>
+<code>target remote ip:1234</code>
+</pre>
+
+<p>
+之后就可以使用gdb进行调试了
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge03eeaf" class="outline-3">
+<h3 id="orge03eeaf">参考</h3>
+<div class="outline-text-3" id="text-orge03eeaf">
+<p>
+REDHAT的远程调试指南
+</p>
+
+<p>
+<a href="https://developers.redhat.com/blog/2015/04/28/remote-debugging-with-gdb">https://developers.redhat.com/blog/2015/04/28/remote-debugging-with-gdb</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-01-28</p>
+</div>
+</body>
+</html>

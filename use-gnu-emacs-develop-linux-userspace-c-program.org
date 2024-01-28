@@ -1,0 +1,99 @@
+* 使用GNU EMACS开发Linux用户空间C程序
+
+** 配置GNU EMACS
+
+#+BEGIN_SRC
+package-install RET eglot RET
+package-isntall RET company RET
+#+END_SRC
+
+在GNU EMACS初始化脚本中加入
+
+#+BEGIN_SRC elisp
+(add-hook 'c-mode-hook 'eglot-ensure) ;; 在C模式自动开启eglot
+(add-hook 'c-mode-hook 'company-mode) ;; 在C模式自动开启company
+#+END_SRC
+
+** 编写Makefile
+
+#+BEGIN_SRC makefile
+  CROSS_COMPILE ?= arch-vendor-
+  CC = $(CROSS_COMPILE)gcc
+  CFLAGS += -Wall -Wextra -O3 -g3
+  CFLAGS += -march=xxx -mabi=xxx
+
+  all:
+	$(CC) $(CFLAGS) hello.c -o hello
+
+  clean:
+	rm -fv *.out hello
+#+END_SRC
+
+** 编写.clangd
+
+由于clangd使用主机的c编译器来处理传入的C源码文件，所以需要clangd忽略机器相关的编译器参数:
+
+#+BEGIN_SRC
+  CompileFlags:
+    Add: -Wno-unknown-warning-option
+    Remove: [-m*, -f*]
+#+END_SRC
+
+** 生成 compile_commands.json
+
+#+BEGIN_SRC
+  make clean
+  bear -- make all
+#+END_SRC
+
+** 编写程序
+
+#+BEGIN_SRC
+  emacs hello.c
+#+END_SRC
+
+输入代码前面的字符就可以看到补全
+
+[[file:emacs-and-linux-c-program.png]]
+
+** 上传到板子
+
+#+BEGIN_SRC shell
+  scp hello xxx@board:/tmp/hello
+#+END_SRC
+
+** 调试
+
+*** 使用printf调试
+
+在程序里面打日志作为调试手段
+
+*** 远程调试
+
+远程板子因为资源限制通常不会提供完整的gdb用来调试，通常会安装一个gdbserver充当agent，供别的机器远程上去调试。
+
+因为嵌入式开发的目标板子和运行GNU EMACS的PC机架构不一样，所以在运行GNU EMACS的机器上需要安装一个支持多个架构的gdb-multiarch:
+
+https://aur.archlinux.org/packages/gdb-multiarch
+
+在板子上运行:
+
+#+BEGIN_SRC shell
+gdbserver 0.0.0.0:1234 /tmp/hello  
+#+END_SRC
+
+在GNU EMACS中运行:
+
+#+BEGIN_SRC
+M-x gud-gdb RET RET
+进入gdb后输入(ip为板子的ip地址):
+target remote ip:1234
+#+END_SRC
+
+之后就可以使用gdb进行调试了
+
+** 参考
+
+REDHAT的远程调试指南
+
+https://developers.redhat.com/blog/2015/04/28/remote-debugging-with-gdb

@@ -8,7 +8,7 @@
 
 使用GNU EMACS进行用户空间C程序开发
 
-TODO
+[[file:use-gnu-emacs-develop-linux-userspace-c-program.org]]
 
 使用GNU EMACS进行linux内核/uboot开发
 
