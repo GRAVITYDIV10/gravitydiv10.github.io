@@ -1,0 +1,71 @@
+* 使用GNU EMACS开发Linux内核和uboot
+
+** 配置GNU EMACS
+
+#+BEGIN_SRC
+package-install eglot RET
+package-install company RET
+package-install dts-mode RET
+#+END_SRC
+
+在GNU EMACS配置文件加入:
+
+#+BEGIN_SRC elisp
+(add-hook 'c-mode-hook 'eglot-ensure) ;; 在C模式自动启用eglot
+(add-hook 'c-mode-hook 'company-mode) ;; 在C模式自动启用company
+#+END_SRC
+
+** 编写 .clangd
+
+由于内核开发一般是交叉编译，所以需要要让clangd忽略架构相关的编译器参数:
+
+需要在linux/uboot的源码目录添加 .clangd 文件:
+
+#+BEGIN_SRC
+  CompileFlags:
+    Add: -Wno-unknown-warning-option
+    Remove: [-m*, -f*]
+#+END_SRC
+
+** 生成 compile_commands.json
+
+使用clangd补全代码需要 compile_comamnds.json 文件
+
+** linux内核
+
+#+BEGIN_SRC shell
+  export ARCH=arch
+  export CROSS_COMPILE=arch-vendor-elf-
+  make xxx_defconfig
+  make compile_commands.json
+#+END_SRC
+
+** uboot
+
+#+BEGIN_SRC shell
+  export ARCH=arch
+  export CROSS_COMPILE=arch-vendor-elf-
+  make xxx_defconfig
+  make -j`nproc`
+  ./scripts/gen_compile_commands.py
+#+END_SRC
+
+** 使用GNU EMACS编写linux/uboot 中的C代码
+
+#+BEGIN_SRC shell
+  emacs drivers/xxx/xxx.c
+#+END_SRC
+
+[[file:emacs-and-linux-kernel.png]]
+
+[[file:emacs-and-uboot.png]]
+
+** 使用GNU EMACS编写设备树
+
+#+BEGIN_SRC shell
+  emacs arch/xxx/boot/dts/xxx.dts
+#+END_SRC
+
+dts-mode提供了高亮和缩进支持:
+
+[[file:emacs-and-devicetree.png]]

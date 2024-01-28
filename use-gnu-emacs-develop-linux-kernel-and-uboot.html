@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-01-28 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="luhui" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-orgf31c949" class="outline-2">
+<h2 id="orgf31c949">使用GNU EMACS开发Linux内核和uboot</h2>
+<div class="outline-text-2" id="text-orgf31c949">
+</div>
+<div id="outline-container-org019b661" class="outline-3">
+<h3 id="org019b661">配置GNU EMACS</h3>
+<div class="outline-text-3" id="text-org019b661">
+<pre class="example">
+<code>package-install eglot RET</code>
+<code>package-install company RET</code>
+<code>package-install dts-mode RET</code>
+</pre>
+
+<p>
+在GNU EMACS配置文件加入:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp"><code>(add-hook 'c-mode-hook 'eglot-ensure) ;; 在C模式自动启用eglot</code>
+<code>(add-hook 'c-mode-hook 'company-mode) ;; 在C模式自动启用company</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1d62d67" class="outline-3">
+<h3 id="org1d62d67">编写 .clangd</h3>
+<div class="outline-text-3" id="text-org1d62d67">
+<p>
+由于内核开发一般是交叉编译，所以需要要让clangd忽略架构相关的编译器参数:
+</p>
+
+<p>
+需要在linux/uboot的源码目录添加 .clangd 文件:
+</p>
+
+<pre class="example">
+<code>CompileFlags:</code>
+<code>  Add: -Wno-unknown-warning-option</code>
+<code>  Remove: [-m*, -f*]</code>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgb64b793" class="outline-3">
+<h3 id="orgb64b793">生成 compile_commands.json</h3>
+<div class="outline-text-3" id="text-orgb64b793">
+<p>
+使用clangd补全代码需要 compile_comamnds.json 文件
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf2cba85" class="outline-3">
+<h3 id="orgf2cba85">linux内核</h3>
+<div class="outline-text-3" id="text-orgf2cba85">
+<div class="org-src-container">
+<pre class="src src-shell"><code>export ARCH=arch</code>
+<code>export CROSS_COMPILE=arch-vendor-elf-</code>
+<code>make xxx_defconfig</code>
+<code>make compile_commands.json</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1d35a95" class="outline-3">
+<h3 id="org1d35a95">uboot</h3>
+<div class="outline-text-3" id="text-org1d35a95">
+<div class="org-src-container">
+<pre class="src src-shell"><code>export ARCH=arch</code>
+<code>export CROSS_COMPILE=arch-vendor-elf-</code>
+<code>make xxx_defconfig</code>
+<code>make -j`nproc`</code>
+<code>./scripts/gen_compile_commands.py</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0082978" class="outline-3">
+<h3 id="org0082978">使用GNU EMACS编写linux/uboot 中的C代码</h3>
+<div class="outline-text-3" id="text-org0082978">
+<div class="org-src-container">
+<pre class="src src-shell"><code>emacs drivers/xxx/xxx.c</code>
+</pre>
+</div>
+
+
+<div id="orgf78eee1" class="figure">
+<p><img src="emacs-and-linux-kernel.png" alt="emacs-and-linux-kernel.png" />
+</p>
+</div>
+
+
+<div id="orga3c02d0" class="figure">
+<p><img src="emacs-and-uboot.png" alt="emacs-and-uboot.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgaaa3bdb" class="outline-3">
+<h3 id="orgaaa3bdb">使用GNU EMACS编写设备树</h3>
+<div class="outline-text-3" id="text-orgaaa3bdb">
+<div class="org-src-container">
+<pre class="src src-shell"><code>emacs arch/xxx/boot/dts/xxx.dts</code>
+</pre>
+</div>
+
+<p>
+dts-mode提供了高亮和缩进支持:
+</p>
+
+
+<div id="orgcb84e3f" class="figure">
+<p><img src="emacs-and-devicetree.png" alt="emacs-and-devicetree.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-01-28</p>
+</div>
+</body>
+</html>

@@ -12,5 +12,5 @@
 
 使用GNU EMACS进行linux内核/uboot开发
 
-TODO
+[[file:use-gnu-emacs-develop-linux-kernel-and-uboot.org]]
 
