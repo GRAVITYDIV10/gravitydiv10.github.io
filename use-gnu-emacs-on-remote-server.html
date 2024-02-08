@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-08 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="luhui" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org671bbf4" class="outline-2">
+<h2 id="org671bbf4">在远程服务器上使用GNU EMACS</h2>
+<div class="outline-text-2" id="text-org671bbf4">
+</div>
+<div id="outline-container-orgb1a1ab7" class="outline-3">
+<h3 id="orgb1a1ab7">kermit: 远程终端模拟器和文件传输</h3>
+<div class="outline-text-3" id="text-orgb1a1ab7">
+<p>
+由于需要使用跳板机连接到服务器，所以需要一个类似xyzmodem这种over console的传输工具:
+</p>
+
+<p>
+<a href="http://www.columbia.edu/kermit/">http://www.columbia.edu/kermit/</a>
+</p>
+
+<p>
+在类Unix上推荐使用ckermit: <a href="https://www.kermitproject.org/ckdaily.html">https://www.kermitproject.org/ckdaily.html</a>
+</p>
+
+<p>
+在Windows上推荐使用kermit95: <a href="https://www.kermitproject.org/ckw10beta.html#download">https://www.kermitproject.org/ckw10beta.html#download</a>
+</p>
+</div>
+
+<div id="outline-container-org1464e07" class="outline-4">
+<h4 id="org1464e07">如何使用Kermit</h4>
+<div class="outline-text-4" id="text-org1464e07">
+<p>
+输入kermit指令回车或通过快捷方式打开kermit会出现以下提示符:
+</p>
+
+<pre class="example">
+<code>C-Kermit 9.0.302 OPEN SOURCE:, 20 Aug 2011, for Linux (64-bit)</code>
+<code>Copyright (C) 1985, 2011,</code>
+<code>Trustees of Columbia University in the City of New York.</code>
+<code>Type ? or HELP for help.</code>
+<code>(/path/to/home/) C-Kermit&gt;</code>
+</pre>
+
+<p>
+使用ssh user@hostname连接到远程:
+</p>
+
+<pre class="example">
+<code>(/home/luhui/) C-Kermit&gt;ssh luhui@lux230.local</code>
+<code>Connecting via command "ssh -e none luhui@lux230.local"</code>
+<code> Escape character: Ctrl-\ (ASCII 28, FS): enabled</code>
+<code>Type the escape character followed by C to get back,</code>
+<code>or followed by ? to see other options.</code>
+<code>----------------------------------------------------</code>
+<code>Last login: Thu Feb  8 12:17:51 2024 from 10.144.144.2</code>
+<code>Linux 5.15.145.</code>
+<code></code>
+<code>What does it mean if there is no fortune for you?</code>
+<code></code>
+<code>luhui@lux230:~$</code>
+<code></code>
+</pre>
+
+<p>
+如果想从远程主机发送文件到本地:
+</p>
+
+<p>
+远程需要安装一个kermit发送程序
+</p>
+
+<pre class="example">
+<code>luhui@lux230:~$ kermit -s /etc/motd </code>
+<code>Return to your local Kermit and give a RECEIVE command.</code>
+<code></code>
+<code>KERMIT READY TO SEND...</code>
+<code>9 S~/ @-#Y3~^&gt;J)0___N"U1@G</code>
+<code>----------------------------------------------------</code>
+<code>----------------------------------------------------</code>
+<code> SENT: [/etc/motd] To: [/home/luhui/motd] (OK)</code>
+<code></code>
+</pre>
+
+<p>
+你可以在运行kermit的目录看到motd文件
+</p>
+
+<p>
+如果需要发送本地文件到远程主机:
+</p>
+
+<p>
+远程需要安装一个kermit接收程序
+</p>
+
+<pre class="example">
+<code>luhui@lux230:~$ kermit -r</code>
+<code>Return to your local Kermit and give a SEND command.</code>
+<code></code>
+<code>KERMIT READY TO RECEIVE...</code>
+<code></code>
+<code># 按下 [ Ctrl + \ ][ C ] 退出终端模拟</code>
+<code>(/home/luhui/) C-Kermit&gt; send /etc/issue</code>
+<code>(/home/luhui/) C-Kermit&gt; c</code>
+<code>Connecting via command "ssh -e none luhui@lux230.local"</code>
+<code> Escape character: Ctrl-\ (ASCII 28, FS): enabled</code>
+<code>Type the escape character followed by C to get back,</code>
+<code>or followed by ? to see other options.</code>
+<code>----------------------------------------------------</code>
+<code></code>
+<code>luhui@lux230:~$ ls -lh issue </code>
+<code>-rw-r--r-- 1 luhui users 28 Nov 25 08:00 issue</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org269023c" class="outline-3">
+<h3 id="org269023c">终端中的GNU EMACS鼠标</h3>
+<div class="outline-text-3" id="text-org269023c">
+<p>
+需要开启xterm-mouse-mode，在GNU EMACS初始化文件中添加:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp"><code>(xterm-mouse-mode t)</code>
+</pre>
+</div>
+
+<p>
+这样就可以在终端中使用鼠标了
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-02-08</p>
+</div>
+</body>
+</html>

@@ -14,3 +14,6 @@
 
 [[file:use-gnu-emacs-develop-linux-kernel-and-uboot.org]]
 
+远程到服务器上使用GNU EMACS的一些设置
+
+[[file:use-gnu-emacs-on-remote-server.org]]

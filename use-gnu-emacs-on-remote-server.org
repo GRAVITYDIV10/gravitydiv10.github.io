@@ -1,0 +1,94 @@
+* 在远程服务器上使用GNU EMACS
+
+** kermit: 远程终端模拟器和文件传输
+
+由于需要使用跳板机连接到服务器，所以需要一个类似xyzmodem这种over console的传输工具:
+
+http://www.columbia.edu/kermit/
+
+在类Unix上推荐使用ckermit: https://www.kermitproject.org/ckdaily.html
+
+在Windows上推荐使用kermit95: https://www.kermitproject.org/ckw10beta.html#download
+
+*** 如何使用Kermit
+
+输入kermit指令回车或通过快捷方式打开kermit会出现以下提示符:
+
+#+BEGIN_SRC
+C-Kermit 9.0.302 OPEN SOURCE:, 20 Aug 2011, for Linux (64-bit)
+Copyright (C) 1985, 2011,
+Trustees of Columbia University in the City of New York.
+Type ? or HELP for help.
+(/path/to/home/) C-Kermit>
+#+END_SRC
+
+使用ssh user@hostname连接到远程:
+
+#+BEGIN_SRC
+(/home/luhui/) C-Kermit>ssh luhui@lux230.local
+Connecting via command "ssh -e none luhui@lux230.local"
+ Escape character: Ctrl-\ (ASCII 28, FS): enabled
+Type the escape character followed by C to get back,
+or followed by ? to see other options.
+----------------------------------------------------
+Last login: Thu Feb  8 12:17:51 2024 from 10.144.144.2
+Linux 5.15.145.
+
+What does it mean if there is no fortune for you?
+
+luhui@lux230:~$
+
+#+END_SRC
+
+如果想从远程主机发送文件到本地:
+
+远程需要安装一个kermit发送程序
+
+#+BEGIN_SRC
+luhui@lux230:~$ kermit -s /etc/motd 
+Return to your local Kermit and give a RECEIVE command.
+
+KERMIT READY TO SEND...
+9 S~/ @-#Y3~^>J)0___N"U1@G
+----------------------------------------------------
+----------------------------------------------------
+ SENT: [/etc/motd] To: [/home/luhui/motd] (OK)
+
+#+END_SRC
+
+你可以在运行kermit的目录看到motd文件
+
+如果需要发送本地文件到远程主机:
+
+远程需要安装一个kermit接收程序
+
+#+BEGIN_SRC
+luhui@lux230:~$ kermit -r
+Return to your local Kermit and give a SEND command.
+
+KERMIT READY TO RECEIVE...
+
+# 按下 [ Ctrl + \ ][ C ] 退出终端模拟
+(/home/luhui/) C-Kermit> send /etc/issue
+(/home/luhui/) C-Kermit> c
+Connecting via command "ssh -e none luhui@lux230.local"
+ Escape character: Ctrl-\ (ASCII 28, FS): enabled
+Type the escape character followed by C to get back,
+or followed by ? to see other options.
+----------------------------------------------------
+
+luhui@lux230:~$ ls -lh issue 
+-rw-r--r-- 1 luhui users 28 Nov 25 08:00 issue
+#+END_SRC
+
+** 终端中的GNU EMACS鼠标
+
+需要开启xterm-mouse-mode，在GNU EMACS初始化文件中添加:
+
+#+BEGIN_SRC elisp
+  (xterm-mouse-mode t)
+#+END_SRC
+
+这样就可以在终端中使用鼠标了
+
+
