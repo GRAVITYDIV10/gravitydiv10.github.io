@@ -1,7 +1,8 @@
 * 在Windows上使用Tinc
 
-** TAP网卡找不到的解决方法
+** TAP设备找不到
 
 1. 使用管理员权限重新执行addtap.bat
 
 2. 删除配置文件中的Device字段
+
