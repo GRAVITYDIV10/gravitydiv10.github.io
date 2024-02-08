@@ -1,8 +1,8 @@
-* ��Windows��ʹ��Tinc
+* 在Windows上使用Tinc
 
-** TAP�豸�Ҳ���
+** TAP设备找不到
 
-1. ʹ�ù���ԱȨ������ִ��addtap.bat
+1. 使用管理员权限重新执行addtap.bat
 
-2. ɾ�������ļ��е�Device�ֶ�
+2. 删除配置文件中的Device字段
 
