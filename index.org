@@ -1,5 +1,11 @@
 * 博客
 
+** Windows
+
+在Windows上使用tinc
+
+[[file:use-tinc-on-windows.org]]
+
 ** GNU EMACS 与嵌入式开发
 
 使用GNU EMACS进行单片机开发
