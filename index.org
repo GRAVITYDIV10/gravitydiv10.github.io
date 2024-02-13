@@ -1,5 +1,11 @@
 * 博客
 
+** 点灯
+
+一些点灯思路
+
+[[file:bringup-note.org]]
+
 ** Windows
 
 在Windows上使用tinc
