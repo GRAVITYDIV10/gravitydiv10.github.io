@@ -1,0 +1,94 @@
+* CH58X裸机汇编指南
+
+** 启动流程
+
+CH58X的启动流程:
+
+1. BOOTROM (用户不可见)
+
+2. 跳转到FLASH XIP (0x00000000)
+
+** 编写link script
+
+这里展示一个最小化的链接脚本
+
+#+BEGIN_SRC lds
+ENTRY(_start) /* 程序入口，其实不指定也没事，保证程序入口放在0x0就可以 */
+
+MEMORY
+{
+        ROM (rx) : ORIGIN = 0x00000000, LENGTH = 448K /* XIP FLASH */
+}
+
+SECTIONS
+{
+    .text :
+    {
+        . = ALIGN(4);
+        boot.o(.text)
+        . = ALIGN(4);
+    } >ROM AT>ROM
+}
+#+END_SRC
+
+** boot.s
+
+下面是一个简单的例子，点亮一颗LED:
+
+#+BEGIN_SRC asm
+      .section .text,"ax",@progbits
+      /* 这些寄存器地址可以从芯片的寄存器手册获取 */
+      .global _start
+  _start:
+      .equ GPIO_BASE,0x40001000
+      .equ R32_PB_DIR,0xC0
+      .equ R32_PB_OUT,0xC8
+      li t0, GPIO_BASE
+  output:
+      lw t1, R32_PB_DIR(t0)
+      ori t1, (1 << 4) /* set PB4 output mode */
+      sw t1, R32_PB_DIR(t0)
+      j high
+      /* 因为不会被执行，所以这里可以存放一些指令之外的东西 */
+      .byte 0xAA
+
+      .align 4 /* 指令需要注意对齐 */
+  high:
+      lw t1, R32_PB_OUT(t0)
+      ori t1, (1 << 4) /* set PB4 high */
+      sw t1, R32_PB_OUT(t0)
+  loop:
+      j loop
+#+END_SRC
+
+
+** 编译指令
+
+需要一个支持riscv的汇编器:
+
+ch58x支持rv32imac指令集
+
+-nostdlib:  不要链接C库以及编译器默认的启动文件
+
+-static:    将可执行文件静态链接
+
+-T link.ld: 使用link.ld作为链接脚本
+
+
+#+BEGIN_SRC shell
+  clang -target riscv32-unknown-elf \
+	  -march=rv32imac \
+	  -nostdlib -static -T link.ld \
+	  -mno-relax \
+	  boot.s -o ch58x.elf
+  llvm-objcopy -O binary ch58x.elf ch58x.bin
+#+END_SRC
+
+** 烧录指令
+
+Linux建议使用wchisp:
+
+#+BEGIN_SRC
+  # 将boot引脚拉低，然后上电USB连接电脑就会进入烧录模式
+  wchisp flash ch58x.bin
+#+END_SRC

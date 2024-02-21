@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-21 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org4045dc5" class="outline-2">
+<h2 id="org4045dc5">CH58X裸机汇编指南</h2>
+<div class="outline-text-2" id="text-org4045dc5">
+</div>
+<div id="outline-container-org7dc25ba" class="outline-3">
+<h3 id="org7dc25ba">启动流程</h3>
+<div class="outline-text-3" id="text-org7dc25ba">
+<p>
+CH58X的启动流程:
+</p>
+
+<ol class="org-ol">
+<li>BOOTROM (用户不可见)</li>
+
+<li>跳转到FLASH XIP (0x00000000)</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org48388a8" class="outline-3">
+<h3 id="org48388a8">编写link script</h3>
+<div class="outline-text-3" id="text-org48388a8">
+<p>
+这里展示一个最小化的链接脚本
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lds"><code>ENTRY(_start) /* 程序入口，其实不指定也没事，保证程序入口放在0x0就可以 */</code>
+<code></code>
+<code>MEMORY</code>
+<code>{</code>
+<code>        ROM (rx) : ORIGIN = 0x00000000, LENGTH = 448K /* XIP FLASH */</code>
+<code>}</code>
+<code></code>
+<code>SECTIONS</code>
+<code>{</code>
+<code>    .text :</code>
+<code>    {</code>
+<code>        . = ALIGN(4);</code>
+<code>        boot.o(.text)</code>
+<code>        . = ALIGN(4);</code>
+<code>    } &gt;ROM AT&gt;ROM</code>
+<code>}</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0b6f520" class="outline-3">
+<h3 id="org0b6f520">boot.s</h3>
+<div class="outline-text-3" id="text-org0b6f520">
+<p>
+下面是一个简单的例子，点亮一颗LED:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><code>    .section .text,"ax",@progbits</code>
+<code>    /* 这些寄存器地址可以从芯片的寄存器手册获取 */</code>
+<code>    .global _start</code>
+<code>_start:</code>
+<code>    .equ GPIO_BASE,0x40001000</code>
+<code>    .equ R32_PB_DIR,0xC0</code>
+<code>    .equ R32_PB_OUT,0xC8</code>
+<code>    li t0, GPIO_BASE</code>
+<code>output:</code>
+<code>    lw t1, R32_PB_DIR(t0)</code>
+<code>    ori t1, (1 &lt;&lt; 4) /* set PB4 output mode */</code>
+<code>    sw t1, R32_PB_DIR(t0)</code>
+<code>    j high</code>
+<code>    /* 因为不会被执行，所以这里可以存放一些指令之外的东西 */</code>
+<code>    .byte 0xAA</code>
+<code></code>
+<code>    .align 4 /* 指令需要注意对齐 */</code>
+<code>high:</code>
+<code>    lw t1, R32_PB_OUT(t0)</code>
+<code>    ori t1, (1 &lt;&lt; 4) /* set PB4 high */</code>
+<code>    sw t1, R32_PB_OUT(t0)</code>
+<code>loop:</code>
+<code>    j loop</code>
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgcc8ad47" class="outline-3">
+<h3 id="orgcc8ad47">编译指令</h3>
+<div class="outline-text-3" id="text-orgcc8ad47">
+<p>
+需要一个支持riscv的汇编器:
+</p>
+
+<p>
+ch58x支持rv32imac指令集
+</p>
+
+<p>
+-nostdlib:  不要链接C库以及编译器默认的启动文件
+</p>
+
+<p>
+-static:    将可执行文件静态链接
+</p>
+
+<p>
+-T link.ld: 使用link.ld作为链接脚本
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>clang -target riscv32-unknown-elf \</code>
+<code>        -march=rv32imac \</code>
+<code>        -nostdlib -static -T link.ld \</code>
+<code>        -mno-relax \</code>
+<code>        boot.s -o ch58x.elf</code>
+<code>llvm-objcopy -O binary ch58x.elf ch58x.bin</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org13844bf" class="outline-3">
+<h3 id="org13844bf">烧录指令</h3>
+<div class="outline-text-3" id="text-org13844bf">
+<p>
+Linux建议使用wchisp:
+</p>
+
+<pre class="example">
+<code># 将boot引脚拉低，然后上电USB连接电脑就会进入烧录模式</code>
+<code>wchisp flash ch58x.bin</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-02-21</p>
+</div>
+</body>
+</html>

@@ -1,5 +1,11 @@
 * 博客
 
+** RISCV
+
+CH58X裸机汇编指南
+
+[[file:ch58x-asm-tutor.org]]
+
 ** 点灯
 
 一些点灯思路
