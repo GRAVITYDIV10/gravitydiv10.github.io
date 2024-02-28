@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-02-28 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org462388b" class="outline-2">
+<h2 id="org462388b">SG2002 启动流程</h2>
+<div class="outline-text-2" id="text-org462388b">
+<p>
+fip.bin 文件包括:
+</p>
+
+<ol class="org-ol">
+<li>fsbl <a href="https://github.com/sophgo/fsbl/tree/sg200x-dev">https://github.com/sophgo/fsbl/tree/sg200x-dev</a></li>
+<li>opensbi <a href="https://github.com/sophgo/opensbi/tree/sg200x-dev">https://github.com/sophgo/opensbi/tree/sg200x-dev</a></li>
+<li>uboot <a href="https://github.com/sophgo/u-boot-2021.10/tree/sg200x-dev">https://github.com/sophgo/u-boot-2021.10/tree/sg200x-dev</a></li>
+</ol>
+</div>
+
+<div id="outline-container-org8fd8013" class="outline-3">
+<h3 id="org8fd8013">BROM</h3>
+<div class="outline-text-3" id="text-org8fd8013">
+<ol class="org-ol">
+<li>检测SD卡的MBR分区表的第一个分区是否为FAT32(LBA)类型的分区，是否标记为可启动，如果失败，则进入USB烧录模式</li>
+
+<li>从SD卡第一个分区读取fip.bin，如果失败，则进入USB烧录模式</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgbf87be4" class="outline-3">
+<h3 id="orgbf87be4">FSBL</h3>
+<div class="outline-text-3" id="text-orgbf87be4">
+<ol class="org-ol">
+<li>执行时钟/DDR/外设的初始化</li>
+
+<li>将opensbi加载到内存并启动</li>
+
+<li>将uboot加载到内存并启动</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org1b6334a" class="outline-3">
+<h3 id="org1b6334a">UBOOT</h3>
+<div class="outline-text-3" id="text-org1b6334a">
+<ol class="org-ol">
+<li>检查SD卡第一个分区是否拥有boot.sd文件，如果有，则使用fatload加载到内存，然后使用bootm ADDR#config-BOARD启动</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-02-28</p>
+</div>
+</body>
+</html>

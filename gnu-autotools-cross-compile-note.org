@@ -1,0 +1,38 @@
+* 基于GNU Autotools的项目交叉编译技巧
+
+** la 文件
+
+xxx.la文件对交叉编译是有害的，它们会引用host主机的库，导致交叉编译失败，建议删除
+
+** pkg-config
+
+使用 pkg-config 容易受到host的环境污染
+
+禁止pkg-config的使用:
+
+#+BEGIN_SRC shell
+./configure PKG_CONFIG=/bin/false
+#+END_SRC
+
+*** pkg-config 替代品
+
+有些项目会提供XXX_CFLAGS和XXX_LIBS:
+
+#+BEGIN_SRC shell
+  ./configure \
+      BAR_CFLAGS="-I/path/to/pkg-bar/usr/include"\
+      BAR_LIBS="-L/path/to/pkg-bar/usr/lib -lbar\
+               -Wl,-rpath-link,/path/to/pkg-bar/usr/lib"\
+      PKG_CONFIG=/bin/false
+#+END_SRC
+
+如果项目没有提供，则:
+
+#+BEGIN_SRC shell
+  ./configure \
+      CFLAGS="-I/path/to/pkg-bar/usr/include"\
+      LDFLAGS="-L/path/to/pkg-bar/usr/lib -lbar\
+               -Wl,-rpath-link,/path/to/pkg-bar/usr/lib"\
+      PKG_CONFIG=/bin/false
+#+END_SRC
+

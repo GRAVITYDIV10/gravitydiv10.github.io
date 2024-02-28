@@ -1,0 +1,27 @@
+* SG2002 启动流程
+
+fip.bin 文件包括:
+
+1. fsbl https://github.com/sophgo/fsbl/tree/sg200x-dev
+2. opensbi https://github.com/sophgo/opensbi/tree/sg200x-dev
+3. uboot https://github.com/sophgo/u-boot-2021.10/tree/sg200x-dev
+
+** BROM
+
+1. 检测SD卡的MBR分区表的第一个分区是否为FAT32(LBA)类型的分区，是否标记为可启动，如果失败，则进入USB烧录模式
+
+2. 从SD卡第一个分区读取fip.bin，如果失败，则进入USB烧录模式
+
+** FSBL
+
+1. 执行时钟/DDR/外设的初始化
+
+2. 将opensbi加载到内存并启动
+
+3. 将uboot加载到内存并启动
+
+** UBOOT
+
+1. 检查SD卡第一个分区是否拥有boot.sd文件，如果有，则使用fatload加载到内存，然后使用bootm ADDR#config-BOARD启动
+
+

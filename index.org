@@ -1,6 +1,16 @@
 * 博客
 
+** 软件
+
+基于GNU Autotools的项目交叉编译技巧
+
+[[file:gnu-autotools-cross-compile-note.org]]
+
 ** RISCV
+
+SG2002启动流程
+
+[[file:sg2002-startup.org]]
 
 CH58X裸机汇编指南
 
