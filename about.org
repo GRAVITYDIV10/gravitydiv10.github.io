@@ -1,0 +1,9 @@
+* 关于
+
+gravitydiv10@protonmail.com
+
+地区: Guangdong Shenzhen
+
+正在使用的工具: Emacs, Linux
+
+对Forth,Tcl,Linux开发板,单片机,C,RISCV,ASM,驱动程序,FPGA感兴趣

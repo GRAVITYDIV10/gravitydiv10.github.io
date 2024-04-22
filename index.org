@@ -1,10 +1,30 @@
 * 博客
 
+** 关于
+
+[[file:about.org]]
+
 ** 软件
 
 基于GNU Autotools的项目交叉编译技巧
 
 [[file:gnu-autotools-cross-compile-note.org]]
+
+非特权访问RAW镜像文件中的文件系统
+
+[[file:access-filesystem-in-raw-image-without-privileged.org]]
+
+** 通信
+
+kermit 协议
+
+[[file:kermit-basic-packet-how-to.org]]
+
+** 运维
+
+GPT分区表迁移需要注意的地方
+
+[[file:move-gpt-partition-table-disk-note.org]]
 
 ** RISCV
 

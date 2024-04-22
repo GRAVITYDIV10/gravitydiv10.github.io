@@ -3,21 +3,22 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-08 -->
+<!-- 2024-04-22 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
+<meta name="author" content="Human" />
 <meta name="generator" content="Org Mode" />
 </head>
 <body>
 <div id="content" class="content">
-<div id="outline-container-org9f497bf" class="outline-2">
-<h2 id="org9f497bf">使用GNU EMACS开发Linux内核和uboot</h2>
-<div class="outline-text-2" id="text-org9f497bf">
+<div id="outline-container-org0619b2d" class="outline-2">
+<h2 id="org0619b2d">使用GNU EMACS开发Linux内核和uboot</h2>
+<div class="outline-text-2" id="text-org0619b2d">
 </div>
-<div id="outline-container-org7f492e2" class="outline-3">
-<h3 id="org7f492e2">配置GNU EMACS</h3>
-<div class="outline-text-3" id="text-org7f492e2">
+<div id="outline-container-org7a355cf" class="outline-3">
+<h3 id="org7a355cf">配置GNU EMACS</h3>
+<div class="outline-text-3" id="text-org7a355cf">
 <pre class="example">
 <code>package-install eglot RET</code>
 <code>package-install company RET</code>
@@ -36,9 +37,9 @@
 </div>
 </div>
 
-<div id="outline-container-orgef22df3" class="outline-3">
-<h3 id="orgef22df3">编写 .clangd</h3>
-<div class="outline-text-3" id="text-orgef22df3">
+<div id="outline-container-orgab1e450" class="outline-3">
+<h3 id="orgab1e450">编写 .clangd</h3>
+<div class="outline-text-3" id="text-orgab1e450">
 <p>
 由于内核开发一般是交叉编译，所以需要要让clangd忽略架构相关的编译器参数:
 </p>
@@ -55,18 +56,18 @@
 </div>
 </div>
 
-<div id="outline-container-org419e28a" class="outline-3">
-<h3 id="org419e28a">生成 compile_commands.json</h3>
-<div class="outline-text-3" id="text-org419e28a">
+<div id="outline-container-org06b263f" class="outline-3">
+<h3 id="org06b263f">生成 compile_commands.json</h3>
+<div class="outline-text-3" id="text-org06b263f">
 <p>
 使用clangd补全代码需要 compile_comamnds.json 文件
 </p>
 </div>
 </div>
 
-<div id="outline-container-org37266a1" class="outline-3">
-<h3 id="org37266a1">linux内核</h3>
-<div class="outline-text-3" id="text-org37266a1">
+<div id="outline-container-org9736ff9" class="outline-3">
+<h3 id="org9736ff9">linux内核</h3>
+<div class="outline-text-3" id="text-org9736ff9">
 <div class="org-src-container">
 <pre class="src src-shell"><code>export ARCH=arch</code>
 <code>export CROSS_COMPILE=arch-vendor-elf-</code>
@@ -77,9 +78,9 @@
 </div>
 </div>
 
-<div id="outline-container-org2f189e3" class="outline-3">
-<h3 id="org2f189e3">uboot</h3>
-<div class="outline-text-3" id="text-org2f189e3">
+<div id="outline-container-org901b1e1" class="outline-3">
+<h3 id="org901b1e1">uboot</h3>
+<div class="outline-text-3" id="text-org901b1e1">
 <div class="org-src-container">
 <pre class="src src-shell"><code>export ARCH=arch</code>
 <code>export CROSS_COMPILE=arch-vendor-elf-</code>
@@ -91,31 +92,31 @@
 </div>
 </div>
 
-<div id="outline-container-org05a5478" class="outline-3">
-<h3 id="org05a5478">使用GNU EMACS编写linux/uboot 中的C代码</h3>
-<div class="outline-text-3" id="text-org05a5478">
+<div id="outline-container-orgb3628f7" class="outline-3">
+<h3 id="orgb3628f7">使用GNU EMACS编写linux/uboot 中的C代码</h3>
+<div class="outline-text-3" id="text-orgb3628f7">
 <div class="org-src-container">
 <pre class="src src-shell"><code>emacs drivers/xxx/xxx.c</code>
 </pre>
 </div>
 
 
-<div id="orgbce5553" class="figure">
+<div id="orgf813c7c" class="figure">
 <p><img src="emacs-and-linux-kernel.png" alt="emacs-and-linux-kernel.png" />
 </p>
 </div>
 
 
-<div id="orga2647ed" class="figure">
+<div id="orgb00ac78" class="figure">
 <p><img src="emacs-and-uboot.png" alt="emacs-and-uboot.png" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org06ce139" class="outline-3">
-<h3 id="org06ce139">使用GNU EMACS编写设备树</h3>
-<div class="outline-text-3" id="text-org06ce139">
+<div id="outline-container-orgfe07dac" class="outline-3">
+<h3 id="orgfe07dac">使用GNU EMACS编写设备树</h3>
+<div class="outline-text-3" id="text-orgfe07dac">
 <div class="org-src-container">
 <pre class="src src-shell"><code>emacs arch/xxx/boot/dts/xxx.dts</code>
 </pre>
@@ -126,7 +127,7 @@ dts-mode提供了高亮和缩进支持:
 </p>
 
 
-<div id="org8eddb2f" class="figure">
+<div id="org93560b2" class="figure">
 <p><img src="emacs-and-devicetree.png" alt="emacs-and-devicetree.png" />
 </p>
 </div>
@@ -135,7 +136,7 @@ dts-mode提供了高亮和缩进支持:
 </div>
 </div>
 <div id="postamble" class="status">
-<p>Last updated: 2024-02-08</p>
+<p>Last updated: 2024-04-05</p>
 </div>
 </body>
 </html>

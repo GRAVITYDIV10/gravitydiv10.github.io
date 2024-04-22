@@ -1,0 +1,57 @@
+* 非特权访问RAW镜像文件中的文件系统
+
+** 获取文件系统在镜像文件中的偏移地址
+
+#+BEGIN_SRC shell
+  partx -s sdcard.img
+#+END_SRC
+
+输出结果示例:
+
+#+BEGIN_SRC shell
+  $ partx -s 2024-03-15-raspios-bookworm-arm64-lite.img 
+  NR   START     END SECTORS SIZE NAME UUID
+  1    8192 1056767 1048576 512M      fb33757d-01
+  2 1056768 5406719 4349952 2.1G      fb33757d-02
+#+END_SRC
+
+START字段代表分区开始的offset，单位是sector
+
+转换成bytes:
+
+#+BEGIN_SRC
+  8192 * 512 = 4194304
+#+END_SRC
+
+** FAT
+
+mtools支持将文件拷贝到镜像中:
+
+#+BEGIN_SRC shell
+  # 将file1拷贝到镜像内的FAT文件系统中
+  mcopy -i sdcard.img@@offset file1 ::/
+  # offset需要指定单位:
+  # 1s 一个sector
+  # 1M 一个MiB
+#+END_SRC
+
+例如将文件abc拷贝到上面镜像的第一个分区中:
+
+#+BEGIN_SRC shell
+  touch abc
+  mcopy -i 2024-03-15-raspios-bookworm-arm64-lite.img@@8192s file1 ::/
+#+END_SRC
+
+** EXT4
+
+e2fsprogs 1.47.0 以及之后的版本中的fuse2fs加入了指定偏移的选项:
+
+#+BEGIN_SRC shell
+  fuse2fs -o offset=Nbytes sdcard.img mountpoint
+#+END_SRC
+
+例如挂载上面的镜像的第二个分区到rootfs目录:
+
+#+BEGIN_SRC shell
+  fuse2fs -o offset=$((1056768 * 512)) 2024-03-15-raspios-bookworm-arm64-lite.img rootfs
+#+END_SRC

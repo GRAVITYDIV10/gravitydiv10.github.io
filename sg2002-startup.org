@@ -10,7 +10,7 @@ fip.bin 文件包括:
 
 1. 检测SD卡的MBR分区表的第一个分区是否为FAT32(LBA)类型的分区，是否标记为可启动，如果失败，则进入USB烧录模式
 
-2. 从SD卡第一个分区读取fip.bin，如果失败，则进入USB烧录模式
+2. 从SD卡第一个分区读取fip.bin，加載fip.bin中的代碼到TPU SRAM(0x0C000000)，如果失败，则进入USB烧录模式
 
 ** FSBL
 
@@ -18,7 +18,9 @@ fip.bin 文件包括:
 
 2. 将opensbi加载到内存并启动
 
-3. 将uboot加载到内存并启动
+** OPENSBI
+
+1. 将uboot加载到内存并启动(uboot是opensbi的payload)
 
 ** UBOOT
 

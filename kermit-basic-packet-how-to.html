@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-04-22 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="Human" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org70f1296" class="outline-2">
+<h2 id="org70f1296">kermit 协议</h2>
+<div class="outline-text-2" id="text-org70f1296">
+</div>
+<div id="outline-container-org33b0bb8" class="outline-3">
+<h3 id="org33b0bb8">控制字符</h3>
+<div class="outline-text-3" id="text-org33b0bb8">
+<p>
+ASCII中有33个拥有特殊含义的ASCII字符:0~31 127，这些字符对传输可能是有害的，例如:
+</p>
+
+<p>
+0x03 可能被远端系统解析为 Ctrl+C (^C),这样会结束掉远端的接收进程
+</p>
+
+<p>
+0x13 可能被远端系统解析为 XOFF 导致软件流控被触发
+</p>
+
+<p>
+为了可以在非严格RAW模式(系统没有取消控制字符特殊含义)的链路上使用，kermit会在包中将这些特殊字符编码为可见的ASCII编码。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8dd2283" class="outline-3">
+<h3 id="org8dd2283">7bit模式</h3>
+<div class="outline-text-3" id="text-org8dd2283">
+<p>
+kermit有7bit的链路通信的可选支持
+</p>
+
+<p>
+优点:
+</p>
+
+<ol class="org-ol">
+<li>可以工作在bit7无法正确传输的链路(波特率不匹配，线路嘈杂)</li>
+
+<li>可以工作在只支持ASCII可打印字符的链路</li>
+</ol>
+
+<p>
+缺点:
+</p>
+
+<ol class="org-ol">
+<li>如果第八位被设置，则需要多一个字符用于标识</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-org83cedfd" class="outline-3">
+<h3 id="org83cedfd">校验</h3>
+<div class="outline-text-3" id="text-org83cedfd">
+<p>
+校验用于保证包的正确，kermit basic packet包含一个字节的累加校验，接收的时需要将接收到的字节累加。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org30f76d7" class="outline-3">
+<h3 id="org30f76d7">起始符</h3>
+<div class="outline-text-3" id="text-org30f76d7">
+<p>
+kermit一般会在报文开始的时候发送一个SOH作为起始符，远端系统在遇到起始符的情况下开始接收报文。
+</p>
+
+<p>
+如果链路中SOH有特殊含义，可以更换别的起始符。
+</p>
+
+<p>
+如果链路有明显的消息分割机制，则可以省去起始符，例如使用USB进行通信。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org630ce38" class="outline-3">
+<h3 id="org630ce38">流控</h3>
+<div class="outline-text-3" id="text-org630ce38">
+<p>
+没有硬件或软件流控的情况下，kermit也可以正常工作
+</p>
+
+<p>
+如果有软件流控，可能需要在开始传输和结束传输的时候发送XON/XOFF
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgdc04f51" class="outline-3">
+<h3 id="orgdc04f51">长度</h3>
+<div class="outline-text-3" id="text-orgdc04f51">
+<p>
+kermit中有一个字节用于标识包的长度，接收的时候可以将长度放在寄存器中，然后根据接收内容进行累减，直到0为止。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4289ca9" class="outline-3">
+<h3 id="org4289ca9">ACK NACK</h3>
+<div class="outline-text-3" id="text-org4289ca9">
+<p>
+ACK和NACK用于远端回复，如果包被远端接受，则回复ACK，否则回复NACK，如果收到NACK，则需要重传，或更改参数
+</p>
+
+<p>
+另一种情况是传输超时，远端会回复一个NACK，然后本地进行报文重新发送。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org64c4179" class="outline-3">
+<h3 id="org64c4179">类型</h3>
+<div class="outline-text-3" id="text-org64c4179">
+<p>
+kermit有一个字节用于标识包类型:
+</p>
+
+<p>
+&rsquo;S&rsquo;: 初始化传输参数，会在DATA中包含传输参数，例如最大包size
+&rsquo;Y&rsquo;: ACK
+&rsquo;N&rsquo;: NACK
+&rsquo;D&rsquo;: 代表DATA中包含的是文件数据
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf391188" class="outline-3">
+<h3 id="orgf391188">顺序</h3>
+<div class="outline-text-3" id="text-orgf391188">
+<p>
+为了解决重传检测问题，kermit包中有一个字节的顺序标识，可以用于检测重复的包。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9e1654f" class="outline-3">
+<h3 id="org9e1654f">协商</h3>
+<div class="outline-text-3" id="text-org9e1654f">
+<p>
+kermit支持协议协商，以下是几个场景:
+</p>
+
+<p>
+通信链路不支持8bit传输，需要协商为7bit模式
+</p>
+
+<p>
+计算机内存太小，需要协商最大包长度
+</p>
+
+<p>
+通信链路嘈杂，需要协商包长度（更小的包），和超时设置（更激进的重传策略）
+</p>
+</div>
+
+
+<div id="outline-container-org3aef09e" class="outline-4">
+<h4 id="org3aef09e"><span class="todo TODO">TODO</span> TODO</h4>
+<div class="outline-text-4" id="text-org3aef09e">
+<p>
+TODO
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-04-22</p>
+</div>
+</body>
+</html>

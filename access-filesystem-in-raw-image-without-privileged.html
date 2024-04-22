@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-04-22 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="Human" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-orgf82fbf2" class="outline-2">
+<h2 id="orgf82fbf2">非特权访问RAW镜像文件中的文件系统</h2>
+<div class="outline-text-2" id="text-orgf82fbf2">
+</div>
+<div id="outline-container-orge5d6270" class="outline-3">
+<h3 id="orge5d6270">获取文件系统在镜像文件中的偏移地址</h3>
+<div class="outline-text-3" id="text-orge5d6270">
+<div class="org-src-container">
+<pre class="src src-shell"><code>partx -s sdcard.img</code>
+</pre>
+</div>
+
+<p>
+输出结果示例:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>$ partx -s 2024-03-15-raspios-bookworm-arm64-lite.img </code>
+<code>NR   START     END SECTORS SIZE NAME UUID</code>
+<code>1    8192 1056767 1048576 512M      fb33757d-01</code>
+<code>2 1056768 5406719 4349952 2.1G      fb33757d-02</code>
+</pre>
+</div>
+
+<p>
+START字段代表分区开始的offset，单位是sector
+</p>
+
+<p>
+转换成bytes:
+</p>
+
+<pre class="example">
+<code>8192 * 512 = 4194304</code>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgd7ee7d3" class="outline-3">
+<h3 id="orgd7ee7d3">FAT</h3>
+<div class="outline-text-3" id="text-orgd7ee7d3">
+<p>
+mtools支持将文件拷贝到镜像中:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code># 将file1拷贝到镜像内的FAT文件系统中</code>
+<code>mcopy -i sdcard.img@@offset file1 ::/</code>
+<code># offset需要指定单位:</code>
+<code># 1s 一个sector</code>
+<code># 1M 一个MiB</code>
+</pre>
+</div>
+
+<p>
+例如将文件abc拷贝到上面镜像的第一个分区中:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>touch abc</code>
+<code>mcopy -i 2024-03-15-raspios-bookworm-arm64-lite.img@@8192s file1 ::/</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org96611e0" class="outline-3">
+<h3 id="org96611e0">EXT4</h3>
+<div class="outline-text-3" id="text-org96611e0">
+<p>
+e2fsprogs 1.47.0 以及之后的版本中的fuse2fs加入了指定偏移的选项:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>fuse2fs -o offset=Nbytes sdcard.img mountpoint</code>
+</pre>
+</div>
+
+<p>
+例如挂载上面的镜像的第二个分区到rootfs目录:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code>fuse2fs -o offset=$((1056768 * 512)) 2024-03-15-raspios-bookworm-arm64-lite.img rootfs</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-04-22</p>
+</div>
+</body>
+</html>

@@ -3,21 +3,22 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-08 -->
+<!-- 2024-04-22 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
+<meta name="author" content="Human" />
 <meta name="generator" content="Org Mode" />
 </head>
 <body>
 <div id="content" class="content">
-<div id="outline-container-org4ea7d74" class="outline-2">
-<h2 id="org4ea7d74">使用GNU EMACS开发Linux用户空间C程序</h2>
-<div class="outline-text-2" id="text-org4ea7d74">
+<div id="outline-container-org0717da1" class="outline-2">
+<h2 id="org0717da1">使用GNU EMACS开发Linux用户空间C程序</h2>
+<div class="outline-text-2" id="text-org0717da1">
 </div>
-<div id="outline-container-orgb7f06ea" class="outline-3">
-<h3 id="orgb7f06ea">配置GNU EMACS</h3>
-<div class="outline-text-3" id="text-orgb7f06ea">
+<div id="outline-container-org3809aa8" class="outline-3">
+<h3 id="org3809aa8">配置GNU EMACS</h3>
+<div class="outline-text-3" id="text-org3809aa8">
 <pre class="example">
 <code>package-install RET eglot RET</code>
 <code>package-isntall RET company RET</code>
@@ -35,9 +36,9 @@
 </div>
 </div>
 
-<div id="outline-container-org1fbfbac" class="outline-3">
-<h3 id="org1fbfbac">编写Makefile</h3>
-<div class="outline-text-3" id="text-org1fbfbac">
+<div id="outline-container-org4d5d3ef" class="outline-3">
+<h3 id="org4d5d3ef">编写Makefile</h3>
+<div class="outline-text-3" id="text-org4d5d3ef">
 <div class="org-src-container">
 <pre class="src src-makefile"><code>CROSS_COMPILE ?= arch-vendor-</code>
 <code>CC = $(CROSS_COMPILE)gcc</code>
@@ -54,9 +55,9 @@
 </div>
 </div>
 
-<div id="outline-container-orgeee0729" class="outline-3">
-<h3 id="orgeee0729">编写.clangd</h3>
-<div class="outline-text-3" id="text-orgeee0729">
+<div id="outline-container-org3a425c3" class="outline-3">
+<h3 id="org3a425c3">编写.clangd</h3>
+<div class="outline-text-3" id="text-org3a425c3">
 <p>
 由于clangd使用主机的c编译器来处理传入的C源码文件，所以需要clangd忽略机器相关的编译器参数:
 </p>
@@ -69,9 +70,9 @@
 </div>
 </div>
 
-<div id="outline-container-org1d52c11" class="outline-3">
-<h3 id="org1d52c11">生成 compile_commands.json</h3>
-<div class="outline-text-3" id="text-org1d52c11">
+<div id="outline-container-orgce7745f" class="outline-3">
+<h3 id="orgce7745f">生成 compile_commands.json</h3>
+<div class="outline-text-3" id="text-orgce7745f">
 <pre class="example">
 <code>make clean</code>
 <code>bear -- make all</code>
@@ -79,9 +80,9 @@
 </div>
 </div>
 
-<div id="outline-container-orgfdaf2ae" class="outline-3">
-<h3 id="orgfdaf2ae">编写程序</h3>
-<div class="outline-text-3" id="text-orgfdaf2ae">
+<div id="outline-container-org6c9f3f9" class="outline-3">
+<h3 id="org6c9f3f9">编写程序</h3>
+<div class="outline-text-3" id="text-org6c9f3f9">
 <pre class="example">
 <code>emacs hello.c</code>
 </pre>
@@ -91,16 +92,16 @@
 </p>
 
 
-<div id="orgc261206" class="figure">
+<div id="org66996dd" class="figure">
 <p><img src="emacs-and-linux-c-program.png" alt="emacs-and-linux-c-program.png" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org79dfe66" class="outline-3">
-<h3 id="org79dfe66">上传到板子</h3>
-<div class="outline-text-3" id="text-org79dfe66">
+<div id="outline-container-org4049b44" class="outline-3">
+<h3 id="org4049b44">上传到板子</h3>
+<div class="outline-text-3" id="text-org4049b44">
 <div class="org-src-container">
 <pre class="src src-shell"><code>scp hello xxx@board:/tmp/hello</code>
 </pre>
@@ -108,22 +109,22 @@
 </div>
 </div>
 
-<div id="outline-container-org63c5790" class="outline-3">
-<h3 id="org63c5790">调试</h3>
-<div class="outline-text-3" id="text-org63c5790">
+<div id="outline-container-orgc784930" class="outline-3">
+<h3 id="orgc784930">调试</h3>
+<div class="outline-text-3" id="text-orgc784930">
 </div>
-<div id="outline-container-orgb008344" class="outline-4">
-<h4 id="orgb008344">使用printf调试</h4>
-<div class="outline-text-4" id="text-orgb008344">
+<div id="outline-container-org8d40a75" class="outline-4">
+<h4 id="org8d40a75">使用printf调试</h4>
+<div class="outline-text-4" id="text-org8d40a75">
 <p>
 在程序里面打日志作为调试手段
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgf19ab4a" class="outline-4">
-<h4 id="orgf19ab4a">远程调试</h4>
-<div class="outline-text-4" id="text-orgf19ab4a">
+<div id="outline-container-orgcb8eac0" class="outline-4">
+<h4 id="orgcb8eac0">远程调试</h4>
+<div class="outline-text-4" id="text-orgcb8eac0">
 <p>
 远程板子因为资源限制通常不会提供完整的gdb用来调试，通常会安装一个gdbserver充当agent，供别的机器远程上去调试。
 </p>
@@ -182,9 +183,9 @@ dnf install gdb安装的gdb默认开启了multiarch
 </div>
 </div>
 
-<div id="outline-container-orgc6d0494" class="outline-3">
-<h3 id="orgc6d0494">参考</h3>
-<div class="outline-text-3" id="text-orgc6d0494">
+<div id="outline-container-org4da8e2c" class="outline-3">
+<h3 id="org4da8e2c">参考</h3>
+<div class="outline-text-3" id="text-org4da8e2c">
 <p>
 REDHAT的远程调试指南
 </p>
@@ -197,7 +198,7 @@ REDHAT的远程调试指南
 </div>
 </div>
 <div id="postamble" class="status">
-<p>Last updated: 2024-02-08</p>
+<p>Last updated: 2024-04-05</p>
 </div>
 </body>
 </html>

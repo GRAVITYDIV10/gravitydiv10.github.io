@@ -3,21 +3,22 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-13 -->
+<!-- 2024-04-22 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
+<meta name="author" content="Human" />
 <meta name="generator" content="Org Mode" />
 </head>
 <body>
 <div id="content" class="content">
-<div id="outline-container-org89ee981" class="outline-2">
-<h2 id="org89ee981">一些点灯思路</h2>
-<div class="outline-text-2" id="text-org89ee981">
+<div id="outline-container-org2c89e41" class="outline-2">
+<h2 id="org2c89e41">一些点灯思路</h2>
+<div class="outline-text-2" id="text-org2c89e41">
 </div>
-<div id="outline-container-orgff40841" class="outline-3">
-<h3 id="orgff40841">烧录程序</h3>
-<div class="outline-text-3" id="text-orgff40841">
+<div id="outline-container-org2e13543" class="outline-3">
+<h3 id="org2e13543">烧录程序</h3>
+<div class="outline-text-3" id="text-org2e13543">
 <p>
 没有系统之前可以通过判断:
 </p>
@@ -30,17 +31,17 @@
 </div>
 </div>
 
-<div id="outline-container-org993ca2e" class="outline-3">
-<h3 id="org993ca2e">串口调通之前的bringup</h3>
-<div class="outline-text-3" id="text-org993ca2e">
+<div id="outline-container-orga31cb86" class="outline-3">
+<h3 id="orga31cb86">串口调通之前的bringup</h3>
+<div class="outline-text-3" id="text-orga31cb86">
 <p>
 最简单的方法就是点亮一个led来判断代码的状态:
 </p>
 </div>
 
-<div id="outline-container-org44b3043" class="outline-4">
-<h4 id="org44b3043">汇编</h4>
-<div class="outline-text-4" id="text-org44b3043">
+<div id="outline-container-org277db66" class="outline-4">
+<h4 id="org277db66">汇编</h4>
+<div class="outline-text-4" id="text-org277db66">
 <p>
 如果怀疑启动的汇编代码有问题，则可以通过汇编进行以下操作:
 </p>
@@ -73,9 +74,9 @@
 </div>
 
 
-<div id="outline-container-org1ee74a4" class="outline-4">
-<h4 id="org1ee74a4">C</h4>
-<div class="outline-text-4" id="text-org1ee74a4">
+<div id="outline-container-org7918a25" class="outline-4">
+<h4 id="org7918a25">C</h4>
+<div class="outline-text-4" id="text-org7918a25">
 <p>
 如果汇编阶段没有问题的话，就可以从C代码中点灯来判断哪里卡住了
 </p>
@@ -100,9 +101,9 @@
 </div>
 </div>
 
-<div id="outline-container-orgce635c9" class="outline-4">
-<h4 id="orgce635c9">JTAG/SWD</h4>
-<div class="outline-text-4" id="text-orgce635c9">
+<div id="outline-container-org5a61f02" class="outline-4">
+<h4 id="org5a61f02">JTAG/SWD</h4>
+<div class="outline-text-4" id="text-org5a61f02">
 <p>
 如果条件允许的情况下可以使用带外的调试接口进行调试。
 </p>
@@ -110,9 +111,9 @@
 </div>
 </div>
 
-<div id="outline-container-org51bc908" class="outline-3">
-<h3 id="org51bc908">串口调通之后的bringup</h3>
-<div class="outline-text-3" id="text-org51bc908">
+<div id="outline-container-org555cfea" class="outline-3">
+<h3 id="org555cfea">串口调通之后的bringup</h3>
+<div class="outline-text-3" id="text-org555cfea">
 <p>
 串口调通之后的bringup就很简单了:
 </p>
@@ -124,47 +125,47 @@
 </div>
 </div>
 
-<div id="outline-container-orgd3ef5ed" class="outline-3">
-<h3 id="orgd3ef5ed">非法指令和段错误</h3>
-<div class="outline-text-3" id="text-orgd3ef5ed">
+<div id="outline-container-org430eeaf" class="outline-3">
+<h3 id="org430eeaf">非法指令和段错误</h3>
+<div class="outline-text-3" id="text-org430eeaf">
 </div>
-<div id="outline-container-org1b2ce16" class="outline-4">
-<h4 id="org1b2ce16">软件问题</h4>
-<div class="outline-text-4" id="text-org1b2ce16">
+<div id="outline-container-org182b282" class="outline-4">
+<h4 id="org182b282">代码问题</h4>
+<div class="outline-text-4" id="text-org182b282">
 <p>
-通过调试器或printf来判断出问题的代码是否有问题
+通过调试器或printf来诊断代码
 </p>
 </div>
 </div>
 
-<div id="outline-container-org5267533" class="outline-4">
-<h4 id="org5267533">编译器问题</h4>
-<div class="outline-text-4" id="text-org5267533">
+<div id="outline-container-orga63b887" class="outline-4">
+<h4 id="orga63b887">编译器问题</h4>
+<div class="outline-text-4" id="text-orga63b887">
 <p>
-检查编译器的优化参数，如果打开了CPU不支持的特性则会出现sigill和sigsev，通常出现在riscv平台
+检查编译器的优化参数，如果打开了CPU不支持的特性则会出现sigill和sigsev，通常出现在riscv平台。
 </p>
 </div>
 </div>
 
-<div id="outline-container-org050dc24" class="outline-4">
-<h4 id="org050dc24">DDR 问题</h4>
-<div class="outline-text-4" id="text-org050dc24">
+<div id="outline-container-org8d04144" class="outline-4">
+<h4 id="org8d04144">DDR 问题</h4>
+<div class="outline-text-4" id="text-org8d04144">
 <p>
-尝试更改DDR初始化参数，然后压力测试来确定出问题的参数范围
+尝试更改DDR初始化参数，然后压力测试来确定出问题的参数范围。
 </p>
 </div>
 </div>
 
-<div id="outline-container-org46e8e91" class="outline-4">
-<h4 id="org46e8e91">内核电压问题</h4>
-<div class="outline-text-4" id="text-org46e8e91">
+<div id="outline-container-org036fd7b" class="outline-4">
+<h4 id="org036fd7b">内核电压问题</h4>
+<div class="outline-text-4" id="text-org036fd7b">
 <p>
 带有TPU核的SOC对内核电压要求很严格，有些大陆厂的SOC需要通过超频来达到宣传的性能，可以尝试:
 </p>
 
 <ol class="org-ol">
-<li>调高一点内核电压</li>
-<li>降低一点clk freq</li>
+<li>调高一点内核电压，需要注意电压上限。</li>
+<li>降低一点clk freq，需要注意分频范围。</li>
 </ol>
 
 <p>
@@ -174,22 +175,22 @@
 </div>
 </div>
 
-<div id="outline-container-org37b76f3" class="outline-3">
-<h3 id="org37b76f3">内存压力测试</h3>
-<div class="outline-text-3" id="text-org37b76f3">
+<div id="outline-container-org56a8b6a" class="outline-3">
+<h3 id="org56a8b6a">内存压力测试</h3>
+<div class="outline-text-3" id="text-org56a8b6a">
 </div>
-<div id="outline-container-org16f343a" class="outline-4">
-<h4 id="org16f343a">普通的压力测试</h4>
-<div class="outline-text-4" id="text-org16f343a">
+<div id="outline-container-orgd3c304e" class="outline-4">
+<h4 id="orgd3c304e">普通的压力测试</h4>
+<div class="outline-text-4" id="text-orgd3c304e">
 <p>
-使用memtest程序运行在bootloader/linux系统
+将memtest程序运行在bootloader/linux系统
 </p>
 </div>
 </div>
 
-<div id="outline-container-org7eb740d" class="outline-4">
-<h4 id="org7eb740d">带有DMA的压力测试</h4>
-<div class="outline-text-4" id="text-org7eb740d">
+<div id="outline-container-org7e18adb" class="outline-4">
+<h4 id="org7e18adb">带有DMA的压力测试</h4>
+<div class="outline-text-4" id="text-org7e18adb">
 <p>
 可以进行压力测试的几个高速外设控制器:
 </p>
@@ -203,7 +204,7 @@
 
 <li>显卡控制器，压力测试时候可以将GPU的DMA开满，如果有条件可以调用GPU来编写一个内存测试程序，比如全志社区的lima-memtester</li>
 
-<li>USB控制器，可以接一个USB3.0的网卡进行压力测试，或找一个可以跑满带宽的板子进行echo测试。</li>
+<li>USB控制器，可以接多个USB网卡进行压力测试，或找一个可以跑满带宽的板子进行echo测试。</li>
 
 <li>内存到内存的DMA，可以在内存测试程序中写一个带dma的memcpy</li>
 </ol>
@@ -213,7 +214,7 @@
 </div>
 </div>
 <div id="postamble" class="status">
-<p>Last updated: 2024-02-13</p>
+<p>Last updated: 2024-04-22</p>
 </div>
 </body>
 </html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-04-22 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="Human" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org96c616e" class="outline-2">
+<h2 id="org96c616e">GPT分区表磁盘数据迁移需注意的地方</h2>
+<div class="outline-text-2" id="text-org96c616e">
+</div>
+<div id="outline-container-orgb432a03" class="outline-3">
+<h3 id="orgb432a03">两个分区表</h3>
+<div class="outline-text-3" id="text-orgb432a03">
+<p>
+GPT分区表会在磁盘的两个位置存放:
+</p>
+
+<p>
+磁盘开始位置: 主分区表
+磁盘末尾位置: 备份分区表
+</p>
+
+<p>
+可以将主分区表拿dd命令拷贝到新的磁盘，然后使用 gdisk 程序根据主分区表重建备份分区表:
+</p>
+
+<pre class="example">
+<code>dd if=/dev/SRC of=/dev/DST bs=1M count=XXXX</code>
+<code>sgdisk</code>
+<code>gdisk /dev/DST</code>
+<code># 输入 r 回车, 进入修复模式</code>
+<code># 输入 d 回车, 通过主分区表重建备份分区表</code>
+<code># 输入 w 回车, 将更改写入磁盘</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-04-19</p>
+</div>
+</body>
+</html>
