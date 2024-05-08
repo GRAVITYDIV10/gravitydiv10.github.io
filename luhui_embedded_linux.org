@@ -1,0 +1,99 @@
+* 个人简介
+
+姓名: 路辉
+
+电邮: gravitydiv10@protonmail.com
+
+博客: https://gravitydiv10.github.io
+
+* 专业技能
+
+1. 熟悉Linux内核驱动的移植和调试，包括网络, 显示, USB, 存储，文件系统等
+
+2. 熟悉Linux用户空间的应用编写，使用C/Shell/Tcl/Asm/Forth编程语言
+
+3. 熟悉buildroot/openwrt/yocto等嵌入式系统交叉编译框架
+
+4. 熟悉各种Linux发行版打包移植，包括ArchLinux, Debian, GNU Guix, NixOS
+
+5. 熟悉uboot驱动的移植和调试，包括SPL, 串口, I2C, 网络, MMC, SPI
+
+6. 熟悉笔记本EC单片机固件的编写, 包括 低功耗, 充电管理, 键盘扫描, RTC, 看门狗
+
+7. 熟悉计算机底层架构，操作系统原理，通信协议，网络协议，安全加固，逆向破解。
+
+8. 熟悉万用表，示波器，逻辑分析仪，协议分析仪等硬件调试工具。
+
+9. 熟悉各种协议外设的移植调试: USB, MIPI DSI, MIPI CSI, SDIO, SPI, I2C, UART, MDIO
+
+* 项目经历
+
+** LicheeConsole4A LicheePocket4A LicheeCluster4A LicheePi4A MaixCam LicheeRvNano
+
+项目主页: https://wiki.sipeed.com/
+
+Lichee*4A 系列使用平头哥TH1520芯片的国产RISCV笔记本/掌机/集群板/开发板，运行PLCT实验室提供的RevyOS。
+
+MaixCam LicheeRvNano系列使用算能SG2002的国产RISCV AI相机/视觉开发板，运行Buildroot Linux。
+
+1. 协助硬件进行电路板设计，调试，迭代，压力测试，功能验证。
+
+2. 调通电路板上的所有外设，移植/编写驱动到Linux内核。
+
+3. 修复用户空间/内核中的稳定性问题。
+
+4. 编写笔记本主板EC固件，以及Linux端的驱动代码。
+
+5. 移植适配OpenBMC，运行在集群板的控制器。
+
+6. 设计生产烧录方案，产品测试方案的流程以及代码。
+
+7. 整理驱动代码，定期提交到上游(RevyOS)
+
+8. 对客户的技术支持
+
+** LonganPi 3H
+
+全志H618芯片ARM开发板，运行Debian和Linux主线内核。
+
+职责同上
+
+** 全志V853 
+
+全志V853芯片ARM AI视觉开发板，运行OpenWrt。
+
+职责同上
+
+** VoCore2
+
+项目主页 https://vocore.io/
+
+联发科MT7628 Wifi模块，运行主线OpenWrt
+
+1. 协助硬件进行物料更换测试，新物料的主线Uboot/Linux驱动适配。
+
+2. 移植厂家的驱动代码到主线内核/用户空间
+
+3. 设计生产烧录方案，产品压力测试的流程以及代码。
+
+4. 编写Linux用户空间应用
+
+5. 解决国外客户使用中的各种技术问题
+
+** VoCore2 Screen
+
+使用普通USB接口(USB BULK)的显示屏
+
+1. 验证新的芯片替代方案，进行压力测试以及DEMO编写
+
+* 工作经历
+
+2022.07 ~ 2023.04 太原微铬电子科技有限公司 Linux软件开发
+
+2023.05 ~ 至今    深圳矽速科技有限公司 Linux BSP系统工程师
+
+* 开源项目
+
+** qemu
+
+在自己的分支添加了MT7628,F1C100S等芯片的模拟

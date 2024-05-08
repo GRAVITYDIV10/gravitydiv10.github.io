@@ -1,0 +1,84 @@
+* 使用QEMU 9pfs启动文件系统中的rootfs
+
+** 解压rootfs
+
+从distro的网站下载rootfs，然后在fakeroot环境中解压:
+
+如果你的机器拥有root权限，则可以跳过fakeroot指令
+
+#+BEGIN_SRC
+  $ mkdir rootfs
+  $ cd rootfs
+  $ fakeroot -i perm.db -s perm.db
+  # tar xpf rootfs.tar
+#+END_SRC
+
+fakeroot的 -s 参数用于保存文件的权限信息到 perm.db, -i 参数则是从 perm.db 加载上次保存的权限信息
+
+** 使用proot进入rootfs
+
+#+BEGIN_SRC
+  $ cd rootfs
+  $ fakeroot -i perm.db -s perm.db
+  # proot -S $(pwd)
+#+END_SRC
+
+安装kernel以及initramfs，下面是alpine linux的例子:
+
+#+BEGIN_SRC
+  apk update
+  apk install linux-virt mkinitfs
+#+END_SRC
+
+需要在initramfs中加上9p支持，下面是alpine linux的例子:
+
+/etc/mkinitfs/mkinitfs.conf
+
+#+BEGIN_SRC
+features="base virtio 9p"
+#+END_SRC
+
+加上之后执行 mkinitfs linux-kernel-version 来重建一个带9p支持的 initramfs
+
+设置root账户密码，用来登录:
+
+#+BEGIN_SRC
+  passwd root
+#+END_SRC
+
+设置getty监听串口:
+
+需要将 /etc/inittab 中的 ttyS0 相关内容取消注释
+
+#+BEGIN_SRC
+ttyS0::respawn:/sbin/getty -L 115200 ttyS0 vt100
+#+END_SRC
+
+** qemu 启动指令
+
+#+BEGIN_SRC
+ROOT=/path/to/rootfs
+KERNEL=$ROOT/boot/vmlinuz-virt
+INITRD=$ROOT/boot/initramfs-virt
+CMDLINE='root=nineroot rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=25000,cache=mmap,posixacl console=ttyS0'
+FAKEROOT_DB=$ROOT/perm.db
+
+fakeroot -i $FAKEROOT_DB -s $FAKEROOT_DB -- \
+	qemu-system-x86_64 \
+	-M microvm \
+	-enable-kvm \
+	-m 128 \
+	-kernel $KERNEL \
+	-initrd $INITRD \
+	-append "$CMDLINE" \
+	-fsdev local,security_model=none,multidevs=remap,id=nineroot,path=$ROOT \
+	-device virtio-9p-device,id=nineroot,fsdev=nineroot,mount_tag=nineroot \
+	-netdev user,id=net0 \
+	-device virtio-net-device,netdev=net0 \
+	-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+	-nographic 
+#+END_SRC
+
+执行后应该就可以看到串口的打印信息以及getty了，之后就使用root账户登录然后使用你的系统
+
+如果不想使用 microvm，而是使用pc或q35的话，需要将 virtio-xxx-device 更换为 virtio-xxx-pci，因为普通pc的模拟默认没有virtiobus。

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-05-08 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="Human" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-org859e924" class="outline-2">
+<h2 id="org859e924">CH32V307裸机汇编指南</h2>
+<div class="outline-text-2" id="text-org859e924">
+</div>
+<div id="outline-container-orgecbb904" class="outline-3">
+<h3 id="orgecbb904">寄存器手册</h3>
+<div class="outline-text-3" id="text-orgecbb904">
+<p>
+<a href="https://www.wch.cn/downloads/CH32FV2x_V3xRM_PDF.html">https://www.wch.cn/downloads/CH32FV2x_V3xRM_PDF.html</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1a82aaf" class="outline-3">
+<h3 id="org1a82aaf">原厂的驱动代码</h3>
+<div class="outline-text-3" id="text-org1a82aaf">
+<p>
+<a href="https://www.wch.cn/downloads/CH32V307EVT_ZIP.html">https://www.wch.cn/downloads/CH32V307EVT_ZIP.html</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org373dbfd" class="outline-3">
+<h3 id="org373dbfd">点亮一颗LED</h3>
+<div class="outline-text-3" id="text-org373dbfd">
+<p>
+假设LED灯在GPIO PB4引脚上
+</p>
+
+<p>
+CH32V307的GPIO控制器的clock默认是关闭的.
+</p>
+
+<p>
+打开GPIO控制器的clock:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><code>.equ RCC_BASE, 0x40021000</code>
+<code>.equ R32_RCC_APB2PCENR, 0x18</code>
+<code>.equ IOPBEN, (1 &lt;&lt; 3)</code>
+<code>li t0, RCC_BASE</code>
+<code>lw t1, R32_RCC_APB2PCENR(t0)</code>
+<code>ori t1, t1, IOPBEN // enable PORTB clock</code>
+<code>sw t1, R32_RCC_APB2PCENR(t0)</code>
+</pre>
+</div>
+
+<p>
+配置GPIO PB4为输出模式，并设置高电平:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><code>.equ GPIOB_BASE, 0x40010C00</code>
+<code>.equ R32_GPIO_CFGLR, 0x00</code>
+<code>.equ R32_GPIO_OUTDR, 0x0C</code>
+<code>li t0, GPIOB_BASE</code>
+<code>lw t1, R32_GPIO_CFGLR(t0)</code>
+<code>// PB4 output push pull 2Mhz</code>
+<code>li t2, ~(0xF &lt;&lt; 16) // clean mode bits</code>
+<code>and t1, t1, t2</code>
+<code>li t2, (0x1 &lt;&lt; 16) // set mode</code>
+<code>or t1, t1, t2</code>
+<code>sw t1, R32_GPIO_CFGLR(t0)</code>
+<code>lw t1, R32_GPIO_OUTDR(t0)</code>
+<code>ori t1, t1, (1 &lt;&lt; 4) // LED2 ON</code>
+<code>sw t1, R32_GPIO_OUTDR(t0)</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org574867a" class="outline-3">
+<h3 id="org574867a">SRAM的大小</h3>
+<div class="outline-text-3" id="text-org574867a">
+<p>
+CH32V307的SRAM大小是可以配置的, 默认为32KiB
+</p>
+
+<p>
+如果不确定SRAM大小，可以先将sp寄存器设置在32KiB SRAM末尾位置:
+</p>
+
+<p>
+0x7FFC + 4 / 1024 = 32
+</p>
+
+<div class="org-src-container">
+<pre class="src src-asm"><code>li sp, 0x20007FFC</code>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga1a0944" class="outline-3">
+<h3 id="orga1a0944">获取SYSCLK</h3>
+<div class="outline-text-3" id="text-orga1a0944">
+<p>
+默认开机使用HSI 8Mhz作为SYSCLK，之后可以切换到HSE和PLL
+</p>
+</div>
+</div>
+
+<div id="outline-container-org52f73bb" class="outline-3">
+<h3 id="org52f73bb">获取HBCLK</h3>
+<div class="outline-text-3" id="text-org52f73bb">
+<p>
+SYSCLK分频得到HBCLK
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-05-08</p>
+</div>
+</body>
+</html>

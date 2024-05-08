@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-05-08 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="author" content="Human" />
+<meta name="generator" content="Org Mode" />
+</head>
+<body>
+<div id="content" class="content">
+<div id="outline-container-orgcbda213" class="outline-2">
+<h2 id="orgcbda213">使用QEMU 9pfs启动文件系统中的rootfs</h2>
+<div class="outline-text-2" id="text-orgcbda213">
+</div>
+<div id="outline-container-orga346b39" class="outline-3">
+<h3 id="orga346b39">解压rootfs</h3>
+<div class="outline-text-3" id="text-orga346b39">
+<p>
+从distro的网站下载rootfs，然后在fakeroot环境中解压:
+</p>
+
+<p>
+如果你的机器拥有root权限，则可以跳过fakeroot指令
+</p>
+
+<pre class="example">
+<code>$ mkdir rootfs</code>
+<code>$ cd rootfs</code>
+<code>$ fakeroot -i perm.db -s perm.db</code>
+<code># tar xpf rootfs.tar</code>
+</pre>
+
+<p>
+fakeroot的 -s 参数用于保存文件的权限信息到 perm.db, -i 参数则是从 perm.db 加载上次保存的权限信息
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgec9f4cf" class="outline-3">
+<h3 id="orgec9f4cf">使用proot进入rootfs</h3>
+<div class="outline-text-3" id="text-orgec9f4cf">
+<pre class="example">
+<code>$ cd rootfs</code>
+<code>$ fakeroot -i perm.db -s perm.db</code>
+<code># proot -S $(pwd)</code>
+</pre>
+
+<p>
+安装kernel以及initramfs，下面是alpine linux的例子:
+</p>
+
+<pre class="example">
+<code>apk update</code>
+<code>apk install linux-virt mkinitfs</code>
+</pre>
+
+<p>
+需要在initramfs中加上9p支持，下面是alpine linux的例子:
+</p>
+
+<p>
+/etc/mkinitfs/mkinitfs.conf
+</p>
+
+<pre class="example">
+<code>features="base virtio 9p"</code>
+</pre>
+
+<p>
+加上之后执行 mkinitfs linux-kernel-version 来重建一个带9p支持的 initramfs
+</p>
+
+<p>
+设置root账户密码，用来登录:
+</p>
+
+<pre class="example">
+<code>passwd root</code>
+</pre>
+
+<p>
+设置getty监听串口:
+</p>
+
+<p>
+需要将 /etc/inittab 中的 ttyS0 相关内容取消注释
+</p>
+
+<pre class="example">
+<code>ttyS0::respawn:/sbin/getty -L 115200 ttyS0 vt100</code>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org2bd6d3e" class="outline-3">
+<h3 id="org2bd6d3e">qemu 启动指令</h3>
+<div class="outline-text-3" id="text-org2bd6d3e">
+<pre class="example">
+<code>ROOT=/path/to/rootfs</code>
+<code>KERNEL=$ROOT/boot/vmlinuz-virt</code>
+<code>INITRD=$ROOT/boot/initramfs-virt</code>
+<code>CMDLINE='root=nineroot rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=25000,cache=mmap,posixacl console=ttyS0'</code>
+<code>FAKEROOT_DB=$ROOT/perm.db</code>
+<code></code>
+<code>fakeroot -i $FAKEROOT_DB -s $FAKEROOT_DB -- \</code>
+<code>        qemu-system-x86_64 \</code>
+<code>        -M microvm \</code>
+<code>        -enable-kvm \</code>
+<code>        -m 128 \</code>
+<code>        -kernel $KERNEL \</code>
+<code>        -initrd $INITRD \</code>
+<code>        -append "$CMDLINE" \</code>
+<code>        -fsdev local,security_model=none,multidevs=remap,id=nineroot,path=$ROOT \</code>
+<code>        -device virtio-9p-device,id=nineroot,fsdev=nineroot,mount_tag=nineroot \</code>
+<code>        -netdev user,id=net0 \</code>
+<code>        -device virtio-net-device,netdev=net0 \</code>
+<code>        -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \</code>
+<code>        -nographic </code>
+</pre>
+
+<p>
+执行后应该就可以看到串口的打印信息以及getty了，之后就使用root账户登录然后使用你的系统
+</p>
+
+<p>
+如果不想使用 microvm，而是使用pc或q35的话，需要将 virtio-xxx-device 更换为 virtio-xxx-pci，因为普通pc的模拟默认没有virtiobus。
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p>Last updated: 2024-05-08</p>
+</div>
+</body>
+</html>
